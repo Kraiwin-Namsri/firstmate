@@ -904,7 +904,7 @@ test_ship_and_scout_teach_validation_round_pause() {
 # messages, PR text, issues, and code comments, and must not ban shared repo
 # language like a PR or issue number.
 test_ship_and_scout_ban_fleet_vocabulary_in_shipped_text() {
-  local home kind id brief
+  local home kind id brief block ship_block scout_block
   home="$TMP_ROOT/fleet-vocabulary-home"
   mkdir -p "$home/data"
 
@@ -921,8 +921,21 @@ test_ship_and_scout_ban_fleet_vocabulary_in_shipped_text() {
       "$kind brief did not ban fleet vocabulary and direct address in shipped text"
     assert_grep "A PR number, issue number, or repo name is fine" "$brief" \
       "$kind brief did not allow shared repo language such as a PR or issue number"
+    # Extract the full numbered rule block (its own line through the blank line
+    # that ends it) rather than two disconnected phrases, so stray leftover text
+    # pasted into the block (e.g. from the daemon rule above it) is caught even
+    # when both anchor phrases above still individually match.
+    block=$(awk '/^8\. Never put fleet vocabulary/{p=1} p{print; if ($0 == "") exit}' "$brief")
+    [ -n "$block" ] || fail "$kind brief: could not extract the fleet-vocabulary rule block"
+    eval "${kind}_block=\$block"
   done
-  pass "fm-brief.sh: ship and scout scaffolds ban fleet vocabulary and direct address in shipped text"
+  [ "$ship_block" = "$scout_block" ] \
+    || fail "ship and scout fleet-vocabulary rule blocks differ:
+--- ship ---
+$ship_block
+--- scout ---
+$scout_block"
+  pass "fm-brief.sh: ship and scout scaffolds ban fleet vocabulary and direct address in shipped text, with identical rule text"
 }
 
 test_scout_and_secondmate_load_decision_hold_policy() {

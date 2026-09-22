@@ -555,8 +555,6 @@ $ASK_USER_BLOCK
    no "captain", "first mate"/"second mate", "crewmate", "brief", or any direct address to a person.
    A PR number, issue number, or repo name is fine, since that is already shared language outside this tooling.
    Write so the text stands on its own for any reader of this repo, including someone five years from now who has never used this tooling.
-   the daemon accepts \`respond\` immediately and runs the round in the background, so a killed or
-   timed-out call was only waiting for a read while the run kept working.
 
 $INBOX_SECTION
 
