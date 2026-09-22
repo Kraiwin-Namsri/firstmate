@@ -898,11 +898,11 @@ test_ship_and_scout_teach_validation_round_pause() {
   pass "fm-brief.sh: ship and scout scaffolds teach validation-round pauses"
 }
 
-# Regression: a landed commit once opened with "De kapitein wil..." (fleet
-# vocabulary) in a shared repo where non-tooling readers see it. Both ship and
-# scout Rules sections must ban fleet vocabulary and direct address in commit
-# messages, PR text, issues, and code comments, and must not ban shared repo
-# language like a PR or issue number.
+# Regression: a landed commit once opened with internal fleet vocabulary in a
+# shared repo where non-tooling readers see it. Both ship and scout Rules
+# sections must ban fleet vocabulary and direct address in commit messages,
+# PR text, issues, and code comments, and must not ban shared repo language
+# like a PR or issue number.
 test_ship_and_scout_ban_fleet_vocabulary_in_shipped_text() {
   local home kind id brief block ship_block scout_block
   home="$TMP_ROOT/fleet-vocabulary-home"
