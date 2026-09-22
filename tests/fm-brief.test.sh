@@ -898,6 +898,33 @@ test_ship_and_scout_teach_validation_round_pause() {
   pass "fm-brief.sh: ship and scout scaffolds teach validation-round pauses"
 }
 
+# Regression: a landed commit once opened with "De kapitein wil..." (fleet
+# vocabulary) in a shared repo where non-tooling readers see it. Both ship and
+# scout Rules sections must ban fleet vocabulary and direct address in commit
+# messages, PR text, issues, and code comments, and must not ban shared repo
+# language like a PR or issue number.
+test_ship_and_scout_ban_fleet_vocabulary_in_shipped_text() {
+  local home kind id brief
+  home="$TMP_ROOT/fleet-vocabulary-home"
+  mkdir -p "$home/data"
+
+  for kind in ship scout; do
+    id="brief-fleet-vocabulary-$kind"
+    if [ "$kind" = scout ]; then
+      FM_HOME="$home" "$ROOT/bin/fm-brief.sh" "$id" firstmate --scout >/dev/null 2>&1
+    else
+      FM_HOME="$home" "$ROOT/bin/fm-brief.sh" "$id" firstmate --mode direct-PR >/dev/null 2>&1
+    fi
+    brief="$home/data/$id/brief.md"
+    assert_present "$brief" "$kind brief was not scaffolded"
+    assert_grep "fleet vocabulary or a direct address into a commit message, PR title, PR body, issue, or code comment" "$brief" \
+      "$kind brief did not ban fleet vocabulary and direct address in shipped text"
+    assert_grep "A PR number, issue number, or repo name is fine" "$brief" \
+      "$kind brief did not allow shared repo language such as a PR or issue number"
+  done
+  pass "fm-brief.sh: ship and scout scaffolds ban fleet vocabulary and direct address in shipped text"
+}
+
 test_scout_and_secondmate_load_decision_hold_policy() {
   local home scout charter
   home="$TMP_ROOT/decision-policy-home"
@@ -1083,6 +1110,7 @@ test_secondmate_marked_request_reporting_contract
 test_secondmate_directory_paths_are_absolute_and_output_is_stable
 test_pause_verb_override_renders_all_brief_scaffolds
 test_ship_and_scout_teach_validation_round_pause
+test_ship_and_scout_ban_fleet_vocabulary_in_shipped_text
 test_scout_and_secondmate_load_decision_hold_policy
 test_scout_and_secondmate_scaffold
 test_scout_lavish_line_follows_presentation_floor
